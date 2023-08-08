@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import numpy as np
 
@@ -25,6 +27,12 @@ color_dict = {
     "white": (255, 255, 255)
 }
 
+def set_box_array(box_row, box_col):
+    iterable = [int((box_row + 1) * 24 + box_col), int((box_row + 2) * 24 + box_col), int(box_row * 24 + box_col+1), int(box_row * 24 + box_col+2), int(box_row * 24 + box_col-1), int(box_row * 24 + box_col-2), int((box_row - 1) * 24 + box_col), int((box_row - 2) * 24 + box_col)]
+    for index, i in enumerate(iterable):
+        if box_arr[i] != 255 and index % 2 == 0:
+            box_arr[i] = 50 / ((index % 2) + 1)
+
 while run:
     screen.fill(color_dict["black"])
 
@@ -34,15 +42,15 @@ while run:
     if mouse[0]:
         mouse_pos = pygame.mouse.get_pos()
         box_row, box_col = mouse_pos[1]//box_area, mouse_pos[0]//box_area
-        box_arr[int(box_row*24 + box_col)] = 1
-        # box = pygame.Rect(box_col*box_area, box_row*box_area, 24, 24)
-        # pygame.draw.rect(screen, color_dict["white"], box)
+        box_arr[int(box_row*24 + box_col)] = 255
+        set_box_array(box_row, box_col)
+
 
     for i in range(len(box_arr)):
-        if box_arr[i] == 1:
+        if box_arr[i] != 0:
             box_row, box_col = i // 24, i % 24
             box = pygame.Rect(box_col * box_area, box_row * box_area, 24, 24)
-            pygame.draw.rect(screen, color_dict["white"], box)
+            pygame.draw.rect(screen, (box_arr[i],box_arr[i],box_arr[i]), box)
 
     for i in range(23):
         pygame.draw.line(screen, color_dict["gray"], ((i+1)*SCREEN_WIDTH/24, 0), ((i+1)*SCREEN_WIDTH/24, SCREEN_HEIGHT))
@@ -50,6 +58,7 @@ while run:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            print(box_arr)
             run = False
 
     pygame.display.update()
